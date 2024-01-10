@@ -1,7 +1,55 @@
-export default function List (){
+import { sendJSONToIPFS, sendFileToIPFS } from "@/components/pinata"
+import { useState } from "react"
+import { ipfsgateway, pinatajwt } from "@/components/config";
 
-    return(
-        <div>
+
+export default function List() {
+    const [picture, getPicture] = useState('pinatalogo.png')
+    const [picCid, getPicCid] = useState('');
+
+    async function updatePic(e) {
+        const file = e.target.files[0];
+        const getCid = await sendFileToIPFS(file);
+        getPicCid(getCid);
+        const ipfsPath = "https://" + ipfsgateway + ".mypinata.cloud/ipfs/" + getCid + '?pinataGatewayToken=' + pinatajwt;
+        getPicture(ipfsPath);
+      }
+    
+
+    async function listProperty() {
+        let picture = picCid;
+        let gettitle = document.getElementById("title").value.toString()
+        let getprice = document.getElementById("price").value.toString()
+        let getyear = document.getElementById("year").value.toString()
+        let getcity = document.getElementById("city").value.toString()
+        let getcountry = document.getElementById("country").value.toString()
+        let getzip = document.getElementById("zip").value.toString()
+        let gethoa = document.getElementById("hoa").value.toString()
+        let getinfo = document.getElementById("info").value.toString()
+        let getfloors = document.getElementById("floor").value.toString()
+        let getaddress = document.getElementById("address").value.toString()
+        let getbaths = document.getElementById("bath").value.toString()
+        let getrooms = document.getElementById("room").value.toString()
+        let getgarage = document.getElementById("garage").value.toString()
+        let sellername = document.getElementById("sellername").value.toString()
+        let selleremail = document.getElementById("selleremail").value.toString()
+        let sellerphone = document.getElementById("sellerphone").value.toString()
+        if( !gettitle || !getprice || !getyear || !getcity || !getcountry || !getzip || !gethoa || !getinfo || 
+          !getfloors || !getbaths || !getrooms || !getgarage || !sellername || !selleremail || !sellerphone || !getaddress ) return
+        const receipt = await sendJSONToIPFS(gettitle, getprice, getyear, getcity, getcountry, getzip, gethoa, getinfo,
+            getfloors, getbaths, getrooms, getgarage, sellername, selleremail, sellerphone, picture, getaddress)
+            if (receipt == "complete") {
+                let confirmation = 'Listed Successfully';
+                document.getElementById('displayresult').innerHTML = confirmation
+            }
+        else {
+            let confirmation = 'Info not completed';
+            document.getElementById('displayresult').innerHTML = confirmation
+        }
+    }
+
+    return (
+      <div>
         <div className="container" style={{fontFamily:'SF Pro Display'}}>
           <div className="row g-6">
             <div className="col-md-2 col-lg-2">
@@ -276,7 +324,7 @@ export default function List (){
                   className="btn btn-secondary d-flex justify-content-end"
                   type="file"
                   name="Asset"
-                //   onChange={updatePic}
+                  onChange={updatePic}
                 />
               </form>
               <div className="row g-6">
@@ -336,7 +384,7 @@ export default function List (){
               <div className="row d-flex">
                       <img
                         className="bd-placeholder-img"
-                        // src={picture}
+                        src={picture}
                         width="100%"
                         height="100%"
                         aria-hidden="true"
@@ -351,7 +399,7 @@ export default function List (){
                   fontWeight: "lighter",
                   fontSize: "20px",
                 }}
-                // onClick={listProperty}
+                onClick={listProperty}
               >
                 List Property
               </button>
@@ -360,5 +408,6 @@ export default function List (){
             </div>
           </div>
         </div>
-    )
-}
+    );
+  }
+  
