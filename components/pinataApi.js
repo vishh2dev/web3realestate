@@ -1,6 +1,6 @@
 import axios from "axios";
 import { sendJsonHeader } from "./config";
-
+import { getHeader } from "./config";
 export async function getDate() {
   const dateFormat = new Date(Date.now());
   const dateValue =
@@ -69,7 +69,7 @@ export async function getFileFromIPFS() {
     return getCid;
   })
   return output;
-} 
+}
 
 
 /*
@@ -80,18 +80,18 @@ PINATA IPFS FUNCTION TO READ THE FILES AFTER OBTAINING THE CID's
 
 
 export async function readFileFromIPFS() {
-    const output = await getFileFromIPFS();
-    const listArray = [];
-    
-    for (let i; i < output.length; i++) {
-        const value = output[i];
-        const ipfsPath = "https://" + ipfsgateway + ".mypinata.cloud/ipfs/" + value + '?pinataGatewayToken=' + pinatajwt;
-        const info = await axios.get(ipfsPath, readHeader);
-        console.log(info.data.PropertyInfo)
-        listArray.push(info.data.PropertyInfo);
-      }
-      return listArray;
-    }
+  const output = await getFileFromIPFS();
+  const listArray = [];
+
+  for (let i; i < output.length; i++) {
+    const value = output[i];
+    const ipfsPath = "https://" + ipfsgateway + ".mypinata.cloud/ipfs/" + value + '?pinataGatewayToken=' + pinatajwt;
+    const info = await axios.get(ipfsPath, readHeader);
+    console.log(info.data.PropertyInfo)
+    listArray.push(info.data.PropertyInfo);
+  }
+  return listArray;
+}
 
 /*
 
@@ -99,26 +99,26 @@ PINATA IPFS FUNCTION TO UPLOAD PICTURES AND FILES
 
 */
 
-export async function sendFileToIPFS (file) {
-        const formData = new FormData();
-        const url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
-        formData.append("file", file);
-        const opts = JSON.stringify({
-          cidVersion: 0,
-        })
-        formData.append('pinataOptions', opts);
-        const options = {
-          maxBodyLength: "Infinity",
-          headers: {
-          'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
-            pinata_api_key: pinatakey,
-            pinata_secret_api_key: pinatasecret,
-            Accept: 'text/plain',
-        }
-      }
-        const resFile = await axios.post(url, formData, options);
-        return resFile.data.IpfsHash
-      }
+export async function sendFileToIPFS(file) {
+  const formData = new FormData();
+  const url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
+  formData.append("file", file);
+  const opts = JSON.stringify({
+    cidVersion: 0,
+  })
+  formData.append('pinataOptions', opts);
+  const options = {
+    maxBodyLength: "Infinity",
+    headers: {
+      'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+      pinata_api_key: pinatakey,
+      pinata_secret_api_key: pinatasecret,
+      Accept: 'text/plain',
+    }
+  }
+  const resFile = await axios.post(url, formData, options);
+  return resFile.data.IpfsHash
+}
 
 
 
